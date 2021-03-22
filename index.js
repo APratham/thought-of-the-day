@@ -1,28 +1,17 @@
-var uniqueRandomArray = require("unique-random-array");
-var allThoughts = require("./thoughts.json");
-module.exports = {
-    random:random,
-    all:allThoughts,
-    particular:particular
-};
-function random(category){
-    if(category == null) {
-        var randomCategory = uniqueRandomArray(allThoughts.categories);
-        var randomQuote = uniqueRandomArray(allThoughts[randomCategory()]);
-        return randomQuote();
-    }
-    else{
-        var quote = uniqueRandomArray(allThoughts[category]);
-        return quote();
-    }
-}
+const lib = require('thoughts');
+const express = require('express');
+const app = express();
 
-function particular(category,n){
-    if(n<0 || n>=allThoughts[category].length)
-        return "Index out of bound";
-    else if(n == null || category == null)
-        return "Either index or category is missing!";
-    else{
-        return allThoughts[category][n];
-    }
-}
+var random = lib.random();    // gives random object from any category
+var anotherRandom = lib.random("anonymous");  //gives random object from specified category
+var particular = lib.particular("anonymous",2);   //gives particular object from specified category
+
+app.get('/', (req, res) => {
+  console.log('The app received a request.');
+  res.send(random.thought);
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log('Hello world listening on port', port);
+});
